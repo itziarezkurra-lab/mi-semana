@@ -88,9 +88,28 @@ button:focus-visible{outline:2px solid var(--am);outline-offset:2px}
 .dlg div{background:var(--sf);border-radius:16px;padding:18px;max-width:320px;width:100%;box-shadow:var(--sh)}
 .dlg p{margin:0 0 14px}
 .dlg nav{display:flex;gap:8px;justify-content:flex-end}
+.wkp{cursor:default}.wkp.win{cursor:pointer}
+.mot{font-size:13px;color:var(--ac);font-weight:600;margin:-8px 0 14px;min-height:1px}
+/* celebración */
+.cel{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 50% 35%,#1D9E75 0%,#0F6E56 45%,#0A3D31 100%);color:#fff;text-align:center;overflow:hidden}
+.cel.on{display:flex;animation:fi .35s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+#cf{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cbox{position:relative;max-width:360px;width:100%}
+.medal{width:150px;height:150px;margin:0 auto 6px;animation:pop .7s cubic-bezier(.2,1.6,.4,1) both .15s}
+@keyframes pop{from{transform:scale(0) rotate(-30deg)}to{transform:none}}
+.cel h2{font:600 32px/1.1 Fraunces,Georgia,serif;margin:6px 0 8px;color:#fff}
+.cel .msg{font-size:17px;margin:0 0 18px;opacity:.95}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.stats div{background:rgba(255,255,255,.12);border-radius:12px;padding:10px 4px}
+.stats b{display:block;font:600 24px Fraunces,Georgia,serif}
+.stats span{font-size:12px;opacity:.85}
+.nxt{font-size:13px;opacity:.85;margin:0 0 18px}
+.cel .bt{background:#fff;color:#0F6E56;font-size:16px;padding:12px 26px;border-radius:12px}
 @media (max-width:360px){.cd{grid-template-columns:96px 1fr}}
 </style></head><body><main>
 <div class="top"><div><h1>Mi semana</h1><p class="sub">Flexibilidad, glúteo y espalda. Los martes, gimnasio.</p></div><div class="wkp" id="wkp"></div></div>
+<p class="mot" id="mot"></p>
 <div class="inst" id="inst"><span id="instx"></span><button id="instc" aria-label="Cerrar">×</button></div>
 <div class="wk" id="wk" role="tablist"></div>
 <section id="day"></section>
@@ -102,6 +121,12 @@ button:focus-visible{outline:2px solid var(--am);outline-offset:2px}
 <div class="tmi"><small id="tml">Mantén</small><strong id="tme"></strong>
 <div class="tmb"><button id="tmp" class="pr">Pausa</button><button id="tm15">+15 s</button><button id="tmx">Parar</button></div></div>
 </div></div>
+<div class="cel" id="cel" role="dialog" aria-label="Semana completada"><canvas id="cf"></canvas><div class="cbox">
+<svg class="medal" id="medal" viewBox="0 0 150 150" aria-hidden="true"></svg>
+<h2 id="celt">¡Semana completada!</h2><p class="msg" id="celm"></p>
+<div class="stats"><div><b>4/4</b><span>sesiones</span></div><div><b id="celmin">85</b><span>minutos</span></div><div><b id="celr">1</b><span id="celrl">semana seguida</span></div></div>
+<p class="nxt" id="celn"></p>
+<button class="bt" id="celx">¡A por la siguiente!</button></div></div>
 <div class="dlg" id="dlg"><div><p>¿Borrar todo lo marcado esta semana?</p><nav><button class="bt r" id="dno">Cancelar</button><button class="bt" id="dsi">Borrar</button></nav></div></div>
 <script>
 var P={
@@ -176,7 +201,16 @@ function fig(k){var p=P[k];return '<svg viewBox="0 0 120 100" aria-hidden="true"
 function wk(){
  $("wk").innerHTML=D.map(function(dd,i){return '<button class="dy '+dd.c+(i==sel?' sel':'')+(i==td?' hoy':'')+(done(i)?' ok':'')+'" data-i="'+i+'" role="tab" aria-selected="'+(i==sel)+'" aria-label="'+dd.f+(done(i)?', hecho':'')+'">'+dd.d+'<i></i></button>'}).join("");
  var tot=0,ok=0;D.forEach(function(dd,i){if(dd.e.length){tot++;if(done(i))ok++}});
- $("wkp").innerHTML='<b>'+ok+' / '+tot+'</b>sesiones';
+ var win=ok==tot;
+ $("wkp").innerHTML=win?'<b>🏆 '+ok+'/'+tot+'</b>ver premio':'<b>'+ok+' / '+tot+'</b>sesiones';
+ $("wkp").className="wkp"+(win?" win":"");
+ var r=streak(),m;
+ if(win)m="Semana completa. ¡Enhorabuena! 💚";
+ else if(ok==tot-1)m="¡Solo te queda 1 sesión para completar la semana! 🔥";
+ else if(ok>0)m="Llevas "+ok+" de "+tot+". ¡Vas muy bien!";
+ else if(r.prev>0)m="Racha de "+r.prev+" semana"+(r.prev>1?"s":"")+" seguida"+(r.prev>1?"s":"")+". ¡No la rompas! 🔥";
+ else m="";
+ $("mot").textContent=m;
 }
 function day(){
  var dd=D[sel],h='<div class="hd2"><h2>'+dd.t+'</h2><span class="meta">'+(dd.m||dd.f)+'</span></div>';
@@ -197,6 +231,56 @@ function day(){
  $("snd").textContent=sound?"🔔 Sonido activado":"🔕 Sonido apagado";
 }
 function all(){wk();day()}
+
+/* ---- semanas completas, racha y celebración ---- */
+function iso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+var THIS=iso(ws);
+function okWeeks(){try{return JSON.parse(lsGet("rutina-semanas-ok")||"[]")||[]}catch(e){return []}}
+function weekDone(){return D.every(function(dd,i){return !dd.e.length||done(i)})}
+function streak(){ // racha actual (incluye esta semana si está hecha) y racha previa
+ var set={};okWeeks().forEach(function(k){set[k]=1});
+ function run(from){var n=0,d=new Date(from);while(set[iso(d)]){n++;d.setDate(d.getDate()-7)}return n}
+ var prev=new Date(ws);prev.setDate(prev.getDate()-7);
+ var p=run(prev);return {cur:set[THIS]?p+1:0,prev:p,total:okWeeks().length};
+}
+var LV=[{n:1,t:"Bronce",c:"#CD8B4E",c2:"#E9B27A"},{n:2,t:"Plata",c:"#A9B4BA",c2:"#DCE3E6"},{n:4,t:"Oro",c:"#E8A92A",c2:"#FFD66B"},{n:8,t:"Esmeralda",c:"#1D9E75",c2:"#7FE0BD"},{n:12,t:"Diamante",c:"#5BA8E6",c2:"#BFE3FF"}];
+function level(r){var l=LV[0];LV.forEach(function(x){if(r>=x.n)l=x});return l}
+function nextLv(r){for(var i=0;i<LV.length;i++)if(LV[i].n>r)return LV[i];return null}
+var MSG=["Lo has hecho: cuatro sesiones, cero excusas. Tu cuerpo te lo agradece.","Constancia pura. Así es como se nota el cambio.","Has cumplido contigo misma toda la semana. Eso vale oro.","Glúteo, espalda y flexibilidad: semana entera. ¡Qué orgullo!","Cada serie cuenta, y esta semana las has hecho todas.","Lo difícil no es empezar, es seguir. Y tú has seguido."];
+function medal(l,r){
+ var star="";for(var i=0;i<5;i++){var a=(i*72-90)*Math.PI/180,b=((i*72+36)-90)*Math.PI/180;star+=(i?"L":"M")+(75+30*Math.cos(a)).toFixed(1)+" "+(84+30*Math.sin(a)).toFixed(1)+"L"+(75+12*Math.cos(b)).toFixed(1)+" "+(84+12*Math.sin(b)).toFixed(1)}
+ return '<path d="M48 4L62 46L75 40L88 46L102 4L84 4L75 30L66 4Z" fill="#EF9F27"/><path d="M58 4L70 40L75 38L80 40L92 4" fill="#F7C46B"/>'+
+ '<circle cx="75" cy="88" r="52" fill="'+l.c+'"/><circle cx="75" cy="88" r="44" fill="'+l.c2+'"/><circle cx="75" cy="88" r="44" fill="none" stroke="'+l.c+'" stroke-width="3" stroke-dasharray="4 5"/>'+
+ '<path d="'+star+'Z" fill="'+l.c+'"/>';
+}
+var CF=null;
+function confetti(){
+ var c=$("cf"),x=c.getContext("2d"),W,H,ps=[],cols=["#EF9F27","#7F77DD","#5DCAA5","#F0997B","#FFD66B","#ffffff"],t0=Date.now();
+ function rs(){W=c.width=innerWidth*devicePixelRatio;H=c.height=innerHeight*devicePixelRatio}rs();
+ for(var i=0;i<160;i++)ps.push({x:Math.random()*W,y:-Math.random()*H*.8,w:(6+Math.random()*8)*devicePixelRatio,h:(4+Math.random()*6)*devicePixelRatio,vy:(2+Math.random()*3)*devicePixelRatio,vx:(Math.random()-.5)*2*devicePixelRatio,r:Math.random()*6,vr:(Math.random()-.5)*.2,c:cols[i%cols.length]});
+ cancelAnimationFrame(CF);
+ (function f(){x.clearRect(0,0,W,H);var live=Date.now()-t0<6000;
+  ps.forEach(function(p){p.x+=p.vx+Math.sin(p.y/50)*.6;p.y+=p.vy;p.r+=p.vr;if(p.y>H&&live){p.y=-20;p.x=Math.random()*W}
+   x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore()});
+  if(live||ps.some(function(p){return p.y<H}))CF=requestAnimationFrame(f);else x.clearRect(0,0,W,H)})();
+}
+function fanfare(){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){beep(f,i==3?.7:.18,.3)},i*150)});setTimeout(function(){beep(1319,.9,.25)},750)}
+function celebrate(fresh){
+ var r=streak(),l=level(r.cur||1),nx=nextLv(r.cur);
+ $("medal").innerHTML=medal(l,r.cur);
+ $("celt").textContent=r.cur>1?"¡"+r.cur+" semanas seguidas!":"¡Semana completada!";
+ $("celm").textContent=MSG[(r.total+td)%MSG.length];
+ $("celr").textContent=r.cur;$("celrl").textContent=r.cur==1?"semana seguida":"semanas seguidas";
+ $("celn").textContent="Medalla "+l.t+(nx?" · "+(nx.n-r.cur)+" semana"+(nx.n-r.cur>1?"s":"")+" más para "+nx.t:" · ¡nivel máximo!");
+ $("cel").className="cel on";stopTimer(true);confetti();
+ if(fresh){fanfare();vib([120,80,120,80,400])}
+}
+function checkWeek(){
+ if(!weekDone())return;
+ var w=okWeeks();if(w.indexOf(THIS)<0){w.push(THIS);lsSet("rutina-semanas-ok",JSON.stringify(w))}
+ if(!st._cel){st._cel=1;save();setTimeout(function(){celebrate(true)},700)}
+}
+function unWeek(){if(weekDone())return;var w=okWeeks().filter(function(k){return k!==THIS});lsSet("rutina-semanas-ok",JSON.stringify(w));if(st._cel){delete st._cel;save()}}
 
 /* ---- sonido, vibración y pantalla encendida ---- */
 var AC=null,WL=null;
@@ -231,6 +315,7 @@ function finish(){
  all();
  if(t.kind=="hold"&&t.d==sel){var e2=D[t.d].e[t.j],n2=cnt(t.d,t.j);
   if(n2<need(e2)){$("tm").className="tm";}else{var nx=$("ex"+(t.j+1));if(nx)nx.scrollIntoView({behavior:"smooth",block:"center"})}}
+ if(t.kind=="hold")checkWeek();
 }
 function stopTimer(silent){if(TI){clearInterval(TI);TI=null}T=null;$("tm").className="tm";wake(false);if(!silent)day()}
 $("tmp").onclick=function(){if(!T)return;if(T.paused){T.paused=false;T.end=Date.now()+T.left*1000;this.textContent="Pausa";wake(true)}else{T.paused=true;T.left=(T.end-Date.now())/1000;this.textContent="Seguir"}};
@@ -244,12 +329,14 @@ document.addEventListener("click",function(ev){var b=ev.target.closest("button")
   var wasDone=done(sel);
   if(nc>c){vib(30);if(e.rest&&nc<need(e)&&!(e.side&&nc%2==1)){startTimer({d:sel,j:j,secs:e.rest,kind:"rest",name:e.n});}else{all()}}else all();
   if(done(sel)&&nc>c){chime();vib([200,100,200])}
+  if(nc>c)checkWeek();else{unWeek();wk()}
   return}
  if(b.dataset.run!==undefined){var j2=+b.dataset.run,e2=D[sel].e[j2],c2=cnt(sel,j2);startTimer({d:sel,j:j2,secs:secs(e2,D[sel]),kind:"hold",name:e2.n+(e2.side?(c2?" · derecho":" · izquierdo"):"")});return}
  if(b.dataset.rest!==undefined){var j3=+b.dataset.rest,e3=D[sel].e[j3];startTimer({d:sel,j:j3,secs:e3.rest,kind:"rest",name:e3.n});return}
  if(b.id=="rr"){$("dlg").className="dlg on";return}
  if(b.id=="dno"){$("dlg").className="dlg";return}
- if(b.id=="dsi"){st={};save();stopTimer(true);$("dlg").className="dlg";all();return}
+ if(b.id=="dsi"){st={};save();unWeek();stopTimer(true);$("dlg").className="dlg";all();return}
+ if(b.id=="celx"){$("cel").className="cel";cancelAnimationFrame(CF);return}
  if(b.id=="snd"){sound=!sound;lsSet("rutina-sonido",sound?"1":"0");if(sound){audio();beep(880,.15)}day();return}
  if(b.id=="instc"){lsSet("rutina-inst","0");$("inst").className="inst";return}
 });
@@ -265,5 +352,6 @@ document.addEventListener("click",function(ev){var b=ev.target.closest("button")
  }
  if("serviceWorker" in navigator&&!framed){try{navigator.serviceWorker.register("sw.js").catch(function(){})}catch(e){}}
 })();
+$("wkp").onclick=function(){if(weekDone()){audio();celebrate(false)}};
 all();
 </script></body></html>
