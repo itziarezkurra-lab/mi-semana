@@ -30,7 +30,7 @@ h1{font:600 26px/1.15 Fraunces,Georgia,serif;margin:4px 0 2px}
 .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:18px}
 .dy{border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:12px;padding:8px 0 7px;font:500 13px Figtree,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:52px}
 .dy i{width:9px;height:9px;border-radius:50%;background:var(--ln);display:block}
-.dy.y i,.dy.s i{background:#7F77DD}.dy.k i{background:#D4537E}.dy.p i{background:#378ADD}.dy.g i{background:#EF9F27}.dy.m i{background:#1D9E75}
+.dy.y i,.dy.s i{background:#7F77DD}.dy.k i{background:#D4537E}.dy.p i{background:transparent;border:2px solid #378ADD;width:10px;height:10px}.dy.p.ok i{border:0;width:14px;height:14px}.dy.g i{background:#EF9F27}.dy.m i{background:#1D9E75}
 .dy.sel{background:var(--ac);color:#fff;border-color:var(--ac)}
 .dy.hoy{outline:2px solid var(--am);outline-offset:1px}
 .dy.ok i{background:var(--ac);width:14px;height:14px;position:relative}
@@ -221,7 +221,7 @@ var MO=[ex("gato"),ex("hilo"),ex("esfinge"),ex("pinza"),ex("lateral"),ex("mari")
 var D=[
 {d:"L",f:"Lunes",c:"y",t:"Yoga y flexibilidad",e:YO},
 {d:"M",f:"Martes",c:"k",t:"Gimnasio",m:"45-55 min",e:[],gym:1,x:"Hoy toca tu circuito del gimnasio. Al terminar, 5 min de estiramientos: figura 4, isquios y mariposa (1 min cada uno)."},
-{d:"X",f:"Miércoles",c:"p",t:"Piernas y caderas",e:PC,pre:"Estiramientos suaves: nunca hasta el dolor. Si te apetece, añade un paseo de 20-30 min."},
+{d:"X",f:"Miércoles",c:"p",t:"Piernas y caderas",opt:1,e:PC,pre:"Opcional: hazlo si puedes, no cuenta para completar la semana. Estiramientos suaves: nunca hasta el dolor. Si te apetece, añade un paseo de 20-30 min."},
 {d:"J",f:"Jueves",c:"g",t:"Gomas: glúteo y espalda",e:GO,pre:"Calienta 5 min: círculos de cadera, de hombros y 10 sentadillas sin goma."},
 {d:"V",f:"Viernes",c:"m",t:"Movilidad suave",e:MO},
 {d:"S",f:"Sábado",c:"s",t:"Yoga relajante",e:YS,pre:"Hoy las posturas duran más: ve sin prisa y respira en cada una."},
@@ -244,7 +244,7 @@ var $=function(id){return document.getElementById(id)};
 function need(e){return e.h?(e.side?2:1):(e.side?e.s*2:e.s)}
 function secs(e,dd){return e.h*(dd.mult||1)}
 function cnt(i,j){return (st[i]||[])[j]||0}
-function has(i){return D[i].e.length||D[i].gym}
+function has(i){return (D[i].e.length||D[i].gym)&&!D[i].opt}
 function done(i){var dd=D[i];if(dd.gym)return !!st["gm"+i];if(!dd.e.length)return false;return dd.e.every(function(e,j){return cnt(i,j)>=need(e)})}
 function pct(i){var dd=D[i],t=0,c=0;dd.e.forEach(function(e,j){t+=need(e);c+=Math.min(cnt(i,j),need(e))});return t?Math.round(c/t*100):0}
 function fmt(s){return s>=60?(s%60?Math.floor(s/60)+" min "+(s%60)+" s":s/60+" min"):s+" s"}
@@ -269,7 +269,7 @@ function wk(){
  $("mot").textContent=m;
 }
 function day(){
- var dd=D[sel],h='<div class="hd2"><h2>'+dd.t+'</h2><span class="meta">'+(dd.m||dd.f)+'</span></div>';
+ var dd=D[sel],h='<div class="hd2"><h2>'+dd.t+'</h2><span class="meta">'+(dd.opt?'Opcional · ':'')+(dd.m||dd.f)+'</span></div>';
  if(dd.x)h+='<div class="note">'+dd.x+'</div>';
  if(dd.gym){var gmn=st.gmMin||50,gd=done(sel);
   h+='<div class="gm"><p>¿Cuánto ha durado hoy?</p><div class="chips">'+[45,50,55].map(function(v){return '<button class="chip'+(v==gmn?' on':'')+'" data-gm="'+v+'">'+v+' min</button>'}).join("")+'</div>'+
@@ -335,7 +335,7 @@ function fanfare(){[523,659,784,1047].forEach(function(f,i){setTimeout(function(
 function celebrate(fresh){
  var r=streak(),l=level(r.cur||1),nx=nextLv(r.cur);
  $("medal").innerHTML=medal(l,r.cur);
- var ns=0,mt=0;D.forEach(function(dd,i){if(has(i)){ns++;mt+=mins(i)}});$("cels").textContent=ns+"/"+ns;$("celmin").textContent=mt;
+ var ns=0,mt=0;D.forEach(function(dd,i){if(has(i)){ns++;mt+=mins(i)}else if(dd.opt&&done(i))mt+=mins(i)});$("cels").textContent=ns+"/"+ns;$("celmin").textContent=mt;
  $("celt").textContent=r.cur>1?"¡"+r.cur+" semanas seguidas!":"¡Semana completada!";
  $("celm").textContent=MSG[(r.total+td)%MSG.length];
  $("celr").textContent=r.cur;$("celrl").textContent=r.cur==1?"semana seguida":"semanas seguidas";
