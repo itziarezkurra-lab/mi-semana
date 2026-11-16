@@ -88,6 +88,13 @@ button:focus-visible{outline:2px solid var(--am);outline-offset:2px}
 .dlg div{background:var(--sf);border-radius:16px;padding:18px;max-width:320px;width:100%;box-shadow:var(--sh)}
 .dlg p{margin:0 0 14px}
 .dlg nav{display:flex;gap:8px;justify-content:flex-end}
+.hl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin:-4px 0 14px;font-size:13px;color:var(--mut)}
+.hl .bt{background:#FF2D55;font-size:14px}
+.hl .bt.sv{background:transparent;color:#FF2D55;border:1px solid #FF2D55}
+.hl details{flex-basis:100%}
+.hl summary{cursor:pointer;color:var(--ac);font-weight:600}
+.hl ol{margin:6px 0 0;padding-left:20px}.hl li{margin-bottom:4px}
+.hl code{background:var(--acb);color:var(--ink);border-radius:4px;padding:0 4px;font-size:12px}
 .wkp{cursor:default}.wkp.win{cursor:pointer}
 .mot{font-size:13px;color:var(--ac);font-weight:600;margin:-8px 0 14px;min-height:1px}
 /* celebración */
@@ -217,7 +224,10 @@ function day(){
  if(dd.x)h+='<div class="note">'+dd.x+'</div>';
  if(dd.e.length){
   h+='<div class="bar"><b style="width:'+pct(sel)+'%"></b></div>';
-  if(done(sel))h+='<div class="fin">¡Sesión completada! 🎉</div>';
+  if(done(sel)){h+='<div class="fin">¡Sesión completada! 🎉</div>';
+   var hs=HS[dd.c],mn=mins(sel),sv=st["h"+sel];
+   h+='<div class="hl"><button class="bt'+(sv?' sv':'')+'" id="hk">'+(sv?'✓ Guardado en Salud':'❤️ Guardar en Salud')+'</button><span>'+hs.tipo+' · '+mn+' min</span>'+
+   '<details><summary>Configurar (solo la primera vez)</summary><ol><li>Abre la app <b>Atajos</b> y crea un atajo nuevo con el nombre <code>'+hs.atajo+'</code> (exacto).</li><li>Añade la acción <b>Registrar entrenamiento</b> y elige el tipo <b>'+hs.tipo+'</b>.</li><li>En <b>Duración</b>, toca el campo y, en la barra de variables, elige <b>Entrada del atajo</b>; deja la unidad en <b>min</b>.</li><li>Guarda. La primera vez que lo uses, dale permiso para escribir en Salud.</li></ol></details></div>'}
   if(dd.pre)h+='<div class="note">'+dd.pre+'</div>';
   dd.e.forEach(function(e,j){
    var n=need(e),c=cnt(sel,j),dots="";
@@ -231,6 +241,10 @@ function day(){
  $("snd").textContent=sound?"🔔 Sonido activado":"🔕 Sonido apagado";
 }
 function all(){wk();day()}
+
+/* ---- Salud (vía Atajos) ---- */
+var HS={y:{atajo:"Salud yoga",tipo:"Yoga"},s:{atajo:"Salud yoga",tipo:"Yoga"},m:{atajo:"Salud yoga",tipo:"Yoga"},g:{atajo:"Salud gomas",tipo:"Fuerza funcional"}};
+function mins(i){var pl=parseInt(D[i].m)||20,t=st["t"+i];if(!t)return pl;var r=Math.round((Date.now()-t)/60000);return (r>=pl*0.5&&r<=pl*3)?r:pl}
 
 /* ---- semanas completas, racha y celebración ---- */
 function iso(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
@@ -326,7 +340,7 @@ $("tmx").onclick=function(){stopTimer()};
 document.addEventListener("click",function(ev){var b=ev.target.closest("button");if(!b)return;
  if(b.dataset.i!==undefined){sel=+b.dataset.i;all();window.scrollTo({top:0,behavior:"smooth"});return}
  if(b.classList.contains("dt")){audio();var j=+b.dataset.j,k=+b.dataset.k,e=D[sel].e[j];st[sel]=st[sel]||[];var c=st[sel][j]||0,nc=(k+1==c)?k:k+1;st[sel][j]=nc;save();
-  var wasDone=done(sel);
+  if(nc>c&&!st["t"+sel])st["t"+sel]=Date.now();save();
   if(nc>c){vib(30);if(e.rest&&nc<need(e)&&!(e.side&&nc%2==1)){startTimer({d:sel,j:j,secs:e.rest,kind:"rest",name:e.n});}else{all()}}else all();
   if(done(sel)&&nc>c){chime();vib([200,100,200])}
   if(nc>c)checkWeek();else{unWeek();wk()}
@@ -336,6 +350,8 @@ document.addEventListener("click",function(ev){var b=ev.target.closest("button")
  if(b.id=="rr"){$("dlg").className="dlg on";return}
  if(b.id=="dno"){$("dlg").className="dlg";return}
  if(b.id=="dsi"){st={};save();unWeek();stopTimer(true);$("dlg").className="dlg";all();return}
+ if(b.id=="hk"){var hs2=HS[D[sel].c];st["h"+sel]=Date.now();save();day();
+  location.href="shortcuts://run-shortcut?name="+encodeURIComponent(hs2.atajo)+"&input=text&text="+mins(sel);return}
  if(b.id=="celx"){$("cel").className="cel";cancelAnimationFrame(CF);return}
  if(b.id=="snd"){sound=!sound;lsSet("rutina-sonido",sound?"1":"0");if(sound){audio();beep(880,.15)}day();return}
  if(b.id=="instc"){lsSet("rutina-inst","0");$("inst").className="inst";return}
