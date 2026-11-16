@@ -101,6 +101,11 @@ button:focus-visible{outline:2px solid var(--am);outline-offset:2px}
 .chip{border:1px solid var(--ac);background:transparent;color:var(--ac);border-radius:20px;padding:6px 14px;font:600 14px Figtree,sans-serif;cursor:pointer}
 .chip.on{background:var(--ac);color:#fff}
 .gm .bt{width:100%;font-size:15px;padding:11px}
+.how{font-size:13px;margin:-2px 0 9px}
+.how summary{cursor:pointer;color:var(--ac);font-weight:600;list-style:none}
+.how summary::-webkit-details-marker{display:none}
+.how summary:before{content:"▸ "}.how[open] summary:before{content:"▾ "}
+.how ol{margin:6px 0 0;padding-left:18px;color:var(--ink)}.how li{margin-bottom:4px}
 .wkp{cursor:default}.wkp.win{cursor:pointer}
 .mot{font-size:13px;color:var(--ac);font-weight:600;margin:-8px 0 14px;min-height:1px}
 /* celebración */
@@ -142,50 +147,71 @@ button:focus-visible{outline:2px solid var(--am);outline-offset:2px}
 <button class="bt" id="celx">¡A por la siguiente!</button></div></div>
 <div class="dlg" id="dlg"><div><p>¿Borrar todo lo marcado esta semana?</p><nav><button class="bt r" id="dno">Cancelar</button><button class="bt" id="dsi">Borrar</button></nav></div></div>
 <script>
+/* Figuras: b = cuerpo (trazos), h = cabeza [x,y], band = goma (trazos), loop = goma en anillo [cx,cy,rx,ry,giro] */
 var P={
-nino:{b:["M100 84L62 84L92 70L45 72L12 84"],h:[36,76]},
-gato:{b:["M35 84L38 52Q62 36 85 52L88 84L105 84"],h:[27,58]},
-perro:{b:["M25 84L68 28L98 84"],h:[40,52]},
-fig4:{b:["M22 84L62 84L80 52L98 84","M62 82L70 60L84 54"],h:[13,80]},
-tors:{b:["M20 74L70 74L95 86L72 88","M30 50L30 88"],h:[12,74]},
-mari:{b:["M60 27L60 62","M28 74L60 62L92 74","M28 74L58 82","M92 74L62 82","M60 38L48 60","M60 38L72 60"],h:[60,20]},
-sava:{b:["M22 82L104 82","M38 80L52 86"],h:[14,80]},
-puente:{b:["M22 84L66 56L92 62L92 84"],h:[13,80],band:["M86 59L98 66"]},
-almeja:{b:["M22 76L62 76L94 78L68 83","M62 76L94 60L68 78"],h:[13,72],band:["M94 62L94 77"]},
+nino:{b:["M106 84L74 84L98 66L52 74","M52 74L14 82"],h:[42,80]},
+gato:{b:["M30 84L34 54Q60 38 84 54L88 84L106 84"],h:[24,58]},
+perro:{b:["M22 84L64 26L96 84L108 84"],h:[38,56]},
+estoc:{b:["M8 84L30 84L56 70L82 58L84 84L96 84","M56 70L58 38","M58 42L80 56"],h:[59,29]},
+isquio:{b:["M24 82L60 82L104 82","M60 82L80 20","M32 80L54 50"],h:[14,79],band:["M54 50L78 15Q85 13 83 21L56 52"]},
+fig4:{b:["M22 84L60 84L74 56L94 58","M60 84L84 74L74 58","M30 82L68 64"],h:[13,80]},
+tors:{b:["M26 50L68 50","M36 22L36 78","M68 50L90 70L72 88","M68 50L94 62L78 82"],h:[17,50]},
+pinza:{b:["M30 82L104 82","M30 80L66 60","M64 62L96 76"],h:[76,58]},
+esfinge:{b:["M10 84L56 84L84 58","M84 60L84 84L106 84"],h:[92,48]},
+hilo:{b:["M14 84L40 84L40 56L76 72","M76 72L56 86","M74 70L82 30"],h:[88,78]},
+mari:{b:["M60 28L60 62","M28 74L60 62L92 74","M28 74L58 82","M92 74L62 82","M60 38L48 60","M60 38L72 60"],h:[60,20]},
+lateral:{b:["M30 80L60 66L90 80","M30 80L60 86L90 80","M60 66L74 36","M72 40Q64 8 102 16","M70 44L92 76"],h:[82,30]},
+sava:{b:["M24 82L104 82","M38 80L54 86"],h:[14,80]},
+puente:{b:["M26 84L60 60L86 58L90 84","M28 84L56 86"],h:[15,80],loop:[[78,59,3.5,8,0]]},
+almeja:{b:["M22 76L62 76L94 78L68 84","M62 76L92 58L68 79"],h:[13,72],band:["M90 60L93 77"]},
+patada:{b:["M34 84L38 52L82 52L86 84L100 84","M82 52L112 46"],h:[27,57],band:["M111 49L101 82"]},
+sent:{b:["M80 84L62 84L72 60L42 60L56 32","M56 36L84 40"],h:[60,24],loop:[[64,60,3.5,7.5,0]]},
 remo:{b:["M45 84L100 84","M45 84L45 40","M45 44L40 58L58 54"],h:[45,30],band:["M100 82L58 54"]},
-sent:{b:["M40 62L68 62L62 84L78 84","M40 62L52 36","M52 40L76 42"],h:[55,27],band:["M68 57L68 67"]},
-patada:{b:["M35 84L38 52L82 52L86 84L100 84","M82 52L112 46"],h:[27,58],band:["M108 43L113 50"]},
-apert:{b:["M60 25L60 58L48 86","M60 58L72 86","M25 34L95 34"],h:[60,18],band:["M25 38L95 38"]},
-curl:{b:["M50 30L50 62L44 86","M50 62L58 86","M50 36L52 54L72 44"],h:[50,22],band:["M52 84L72 44"]},
-press:{b:["M60 25L60 58L48 86","M60 58L72 86","M60 34L40 38L40 14","M60 34L80 38L80 14"],h:[60,18],band:["M40 16L80 16"]}
+apert:{b:["M60 25L60 58L48 86","M60 58L72 86","M60 34L24 34","M60 34L96 34"],h:[60,17],band:["M26 34Q60 44 94 34"]},
+curl:{b:["M50 30L50 62L44 86","M50 62L58 86","M50 36L52 56L72 44"],h:[50,22],band:["M54 86L72 44"]},
+press:{b:["M60 25L60 58L48 86","M60 58L72 86","M60 34L42 36L40 12","M60 34L78 36L80 12"],h:[60,17],band:["M48 86L40 12","M72 86L80 12"]}
 };
-var YO=[
-{n:"Postura del niño",p:"nino",h:60,tip:"Caderas hacia los talones, frente al suelo. Respira hondo."},
-{n:"Gato-vaca",p:"gato",s:2,r:10,tip:"Inspira arqueando la espalda y espira redondeándola, lento."},
-{n:"Perro boca abajo",p:"perro",h:40,tip:"Flexiona las rodillas si tiras de la parte de atrás del muslo."},
-{n:"Figura 4 tumbada",p:"fig4",h:60,side:1,tip:"Tobillo sobre la rodilla; tira del muslo hacia ti. Estira el glúteo."},
-{n:"Torsión tumbada",p:"tors",h:45,side:1,tip:"Deja caer las rodillas a un lado, hombros pegados al suelo."},
-{n:"Mariposa",p:"mari",h:60,tip:"Plantas de los pies juntas, espalda larga."},
-{n:"Relajación final",p:"sava",h:180,tip:"Tumbada, ojos cerrados. Respira lento por la nariz."}];
+/* Ejercicios: n nombre, p figura, h segundos (mantener) o s×r series×reps, side por lado, tip clave, how pasos */
+var X={
+nino:{n:"Postura del niño",p:"nino",h:60,tip:"Caderas hacia los talones y frente al suelo. Respira hondo.",how:["De rodillas, junta los dedos gordos de los pies y separa un poco las rodillas.","Lleva el culo hacia los talones y baja el pecho entre los muslos.","Estira los brazos al frente con las palmas en el suelo y apoya la frente."]},
+gato:{n:"Gato-vaca",p:"gato",s:2,r:10,tip:"Mueve la espalda vértebra a vértebra, al ritmo de la respiración.",how:["A cuatro patas: manos bajo los hombros y rodillas bajo las caderas.","Al inspirar, hunde la tripa, saca el culo y mira al frente (vaca).","Al espirar, redondea la espalda hacia el techo y mira al ombligo (gato). Eso es 1 repetición."]},
+perro:{n:"Perro boca abajo",p:"perro",h:40,tip:"Lo importante es la espalda larga: dobla las rodillas lo que necesites.",how:["Desde cuatro patas, mete los dedos de los pies y sube las caderas hacia arriba y atrás.","Empuja el suelo con las manos y deja la cabeza suelta entre los brazos.","Lleva los talones hacia el suelo sin forzar; no hace falta que toquen."]},
+estoc:{n:"Estocada baja",p:"estoc",h:45,side:1,tip:"Estira la parte delantera de la cadera de la pierna de atrás.",how:["Da un paso largo al frente y apoya la rodilla de atrás en el suelo (pon una toalla debajo).","La rodilla de delante queda justo encima del tobillo.","Baja la cadera hacia delante y abajo, con el tronco recto y las manos en la rodilla."]},
+isquio:{n:"Isquios con goma",p:"isquio",h:45,side:1,tip:"La goma rodea la planta del pie; tú sujetas los dos extremos.",how:["Túmbate boca arriba y pasa la goma por la planta de un pie.","Sube esa pierna estirada hacia el techo, sujetando la goma con las dos manos.","Tira suave de la goma hasta notar el estiramiento detrás del muslo. La otra pierna, estirada en el suelo."]},
+fig4:{n:"Figura 4 tumbada",p:"fig4",h:60,side:1,tip:"Estira el glúteo de la pierna cruzada.",how:["Boca arriba con las rodillas dobladas y los pies en el suelo.","Cruza un tobillo sobre la rodilla contraria, formando un 4.","Sube el pie de apoyo y tira de ese muslo hacia el pecho con las manos."]},
+tors:{n:"Torsión tumbada",p:"tors",h:45,side:1,tip:"Hombros pegados al suelo; deja que las rodillas pesen.",how:["Boca arriba, brazos abiertos en cruz y rodillas dobladas juntas.","Deja caer las dos rodillas hacia un lado.","Gira la cabeza hacia el lado contrario y respira despacio."]},
+pinza:{n:"Pinza sentada",p:"pinza",h:45,tip:"Inclínate desde la cadera, no desde la espalda.",how:["Sentada con las piernas estiradas al frente (puedes doblar un poco las rodillas).","Crece hacia arriba al inspirar.","Al espirar, inclina el tronco hacia los pies con la espalda larga, hasta donde llegues."]},
+esfinge:{n:"Esfinge",p:"esfinge",h:40,tip:"Codos bajo los hombros; abre el pecho sin apretar la lumbar.",how:["Túmbate boca abajo con las piernas estiradas.","Apoya los antebrazos en el suelo con los codos justo debajo de los hombros.","Empuja el suelo con los antebrazos, alarga el cuello y relaja el culo."]},
+hilo:{n:"Hilo en la aguja",p:"hilo",h:30,side:1,tip:"Suelta la parte alta de la espalda y el hombro.",how:["A cuatro patas.","Pasa un brazo por debajo del cuerpo hacia el lado contrario, con la palma hacia arriba.","Apoya ese hombro y la mejilla en el suelo. Si quieres, sube el otro brazo hacia el techo."]},
+mari:{n:"Mariposa",p:"mari",h:60,tip:"Plantas de los pies juntas y espalda larga.",how:["Sentada, junta las plantas de los pies y deja caer las rodillas hacia los lados.","Sujeta los pies con las manos y crece hacia arriba.","Si quieres más, inclínate un poco hacia delante con la espalda recta."]},
+lateral:{n:"Estiramiento lateral",p:"lateral",h:30,side:1,tip:"Estira el costado: alarga, no te hundas.",how:["Sentada con las piernas cruzadas.","Sube un brazo por encima de la cabeza y apoya la otra mano en el suelo, a tu lado.","Inclínate hacia el lado de la mano apoyada, alargando el costado contrario."]},
+sava:{n:"Relajación final",p:"sava",h:180,tip:"Tumbada, ojos cerrados. Respira lento por la nariz.",how:["Túmbate boca arriba con brazos y piernas sueltos.","Cierra los ojos y deja que el cuerpo pese.","Respira lento por la nariz, alargando la espiración."]}
+};
+function ex(k,o){var e={},b=X[k];for(var a in b)e[a]=b[a];for(a in o||{})e[a]=o[a];return e}
+var YO=[ex("nino"),ex("gato"),ex("perro"),ex("estoc"),ex("isquio"),ex("fig4"),ex("tors"),ex("mari"),ex("sava")];
+var YS=[ex("nino",{h:90}),ex("gato"),ex("esfinge",{h:45}),ex("perro",{h:60}),ex("estoc",{h:60}),ex("isquio",{h:60}),ex("pinza",{h:60}),ex("lateral",{h:45}),ex("fig4",{h:75}),ex("tors",{h:60}),ex("mari",{h:90}),ex("sava",{h:240})];
 var GO=[
-{n:"Puente de glúteo",p:"puente",s:3,r:15,rest:45,tip:"Goma sobre las rodillas. Aprieta el glúteo 2 seg arriba."},
-{n:"Almeja con goma",p:"almeja",s:3,r:15,rest:45,side:1,tip:"Tumbada de lado, abre la rodilla de arriba sin mover la pelvis."},
-{n:"Patada de glúteo",p:"patada",s:3,r:12,rest:45,side:1,tip:"A cuatro patas, goma en los tobillos. Empuja el talón atrás."},
-{n:"Sentadilla con goma",p:"sent",s:3,r:12,rest:45,tip:"Goma sobre las rodillas, empújalas hacia fuera al bajar."},
-{n:"Remo sentada",p:"remo",s:3,r:12,rest:45,tip:"Goma en los pies. Junta los omóplatos y tira de los codos atrás."},
-{n:"Apertura de espalda",p:"apert",s:3,r:15,rest:45,tip:"Brazos estirados al frente, abre la goma hasta el pecho."},
-{n:"Curl de bíceps",p:"curl",s:3,r:12,rest:45,tip:"Pisa la goma, codos pegados al cuerpo."},
-{n:"Press de hombro",p:"press",s:3,r:12,rest:45,tip:"Goma bajo los pies, empuja hacia arriba sin arquear la espalda."},
-{n:"Estiramiento final",p:"fig4",h:45,side:1,tip:"Cierra con la figura 4 para soltar el glúteo."}];
-var MO=[YO[1],YO[5],{n:"Relajación final",p:"sava",h:120,tip:"Tumbada, respira lento y suelta la espalda."}];
+{n:"Puente de glúteo",p:"puente",s:3,r:15,rest:45,tip:"Goma justo encima de las rodillas. Aprieta el glúteo 2 seg arriba.",how:["Boca arriba, rodillas dobladas, pies en el suelo a la anchura de las caderas.","Coloca la goma justo encima de las rodillas y empuja un poco hacia fuera para tensarla.","Sube la cadera apretando el glúteo hasta alinear hombros, cadera y rodillas. Aguanta 2 segundos y baja despacio."]},
+{n:"Almeja con goma",p:"almeja",s:3,r:15,rest:45,side:1,tip:"Goma justo encima de las rodillas. Los pies no se separan.",how:["Túmbate de lado con las rodillas dobladas y la goma justo encima de las rodillas.","Junta los pies y apoya la cabeza en el brazo de abajo.","Abre la rodilla de arriba sin separar los pies y sin girar la cadera hacia atrás. Baja despacio."]},
+{n:"Patada de glúteo",p:"patada",s:3,r:12,rest:45,side:1,tip:"Goma alrededor de los dos tobillos. Empuja con el talón.",how:["A cuatro patas, con la goma rodeando los dos tobillos.","Estira una pierna hacia atrás y arriba, empujando con el talón contra la goma.","Mantén la espalda recta (sin arquearla) y vuelve despacio sin apoyar la rodilla."]},
+{n:"Sentadilla con goma",p:"sent",s:3,r:12,rest:45,tip:"Goma justo encima de las rodillas. Empújalas hacia fuera.",how:["De pie, pies a la anchura de los hombros y goma justo encima de las rodillas.","Baja como si te sentaras en una silla, con el peso en los talones y los brazos al frente.","Empuja las rodillas hacia fuera contra la goma, sin que se metan hacia dentro. Sube apretando el glúteo."]},
+{n:"Remo sentada",p:"remo",s:3,r:12,rest:45,tip:"Goma por la planta de los pies. Tira de los codos hacia atrás.",how:["Sentada con las piernas estiradas y la goma pasada por la planta de los pies.","Sujeta un extremo en cada mano, con la espalda recta.","Tira de los codos hacia atrás pegados al cuerpo y junta los omóplatos. Vuelve despacio."]},
+{n:"Apertura de espalda",p:"apert",s:3,r:15,rest:45,tip:"De pie, goma delante del pecho. Abre los brazos hacia los lados.",how:["De pie, sujeta la goma con las dos manos y los brazos estirados al frente, a la altura del pecho.","Abre los brazos hacia los lados, estirando la goma, hasta que toque el pecho.","Junta los omóplatos al final y vuelve despacio al frente."]},
+{n:"Curl de bíceps",p:"curl",s:3,r:12,rest:45,tip:"Pisa la goma. Codos pegados al cuerpo.",how:["De pie, pisa el centro de la goma y sujeta un extremo en cada mano, palmas hacia delante.","Dobla los codos subiendo las manos hacia los hombros.","Los codos no se mueven de los costados. Baja despacio."]},
+{n:"Press de hombro",p:"press",s:3,r:12,rest:45,tip:"Pisa la goma. Empuja las manos hacia arriba.",how:["De pie, pisa el centro de la goma con los dos pies. Sube los extremos hasta los hombros.","Empuja las manos hacia arriba hasta estirar los brazos por encima de la cabeza.","Aprieta la tripa para no arquear la espalda. Baja despacio a los hombros."]},
+ex("fig4",{n:"Estiramiento: figura 4",h:45}),
+ex("isquio",{n:"Estiramiento: isquios",h:30})];
+var MO=[ex("gato"),ex("hilo"),ex("esfinge"),ex("pinza"),ex("lateral"),ex("mari"),ex("sava",{h:120})];
 var D=[
-{d:"L",f:"Lunes",c:"y",t:"Yoga y flexibilidad",m:"15 min",e:YO},
-{d:"M",f:"Martes",c:"k",t:"Gimnasio",m:"45-55 min",e:[],gym:1,x:"Hoy toca tu circuito del gimnasio. Al terminar, haz 5 min de estiramientos: figura 4 y mariposa (60 seg cada una)."},
+{d:"L",f:"Lunes",c:"y",t:"Yoga y flexibilidad",e:YO},
+{d:"M",f:"Martes",c:"k",t:"Gimnasio",m:"45-55 min",e:[],gym:1,x:"Hoy toca tu circuito del gimnasio. Al terminar, 5 min de estiramientos: figura 4, isquios y mariposa (1 min cada uno)."},
 {d:"X",f:"Miércoles",c:"z",t:"Descanso",m:"",e:[],x:"Día libre. Un paseo suave de 20-30 min ayuda a recuperar."},
-{d:"J",f:"Jueves",c:"g",t:"Gomas: glúteo y espalda",m:"35 min",e:GO,pre:"Calienta 5 min: círculos de cadera, de hombros y 10 sentadillas sin goma."},
-{d:"V",f:"Viernes",c:"m",t:"Movilidad suave",m:"10 min",e:MO},
-{d:"S",f:"Sábado",c:"s",t:"Yoga relajante",m:"25 min",e:YO,mult:2,pre:"Hoy mantén cada postura el doble de tiempo y sin prisa."},
-{d:"D",f:"Domingo",c:"z",t:"Descanso",m:"",e:[],x:"Día libre. Si te apetece, 5 min de gato-vaca por la mañana."}];
+{d:"J",f:"Jueves",c:"g",t:"Gomas: glúteo y espalda",e:GO,pre:"Calienta 5 min: círculos de cadera, de hombros y 10 sentadillas sin goma."},
+{d:"V",f:"Viernes",c:"m",t:"Movilidad suave",e:MO},
+{d:"S",f:"Sábado",c:"s",t:"Yoga relajante",e:YS,pre:"Hoy las posturas duran más: ve sin prisa y respira en cada una."},
+{d:"D",f:"Domingo",c:"z",t:"Descanso",m:"",e:[],x:"Día libre. Si te apetece, 5 min de gato-vaca y mariposa por la mañana."}];
+/* duración estimada: mantener + 3 s por repetición + descansos + 15 s de cambio entre ejercicios (+5 min de calentamiento si lo hay) */
+D.forEach(function(dd){if(dd.m!==undefined)return;var t=dd.pre&&dd.c=="g"?300:0;dd.e.forEach(function(e){var sd=e.side?2:1;if(e.h)t+=e.h*sd*(dd.mult||1);else t+=e.s*e.r*3*sd+(e.rest||0)*(e.s-1);t+=15});dd.m="≈ "+Math.round(t/60)+" min"});
 
 /* ---- estado ---- */
 var now=new Date(),td=(now.getDay()+6)%7,sel=td,st={},ws=new Date(now);
@@ -211,7 +237,7 @@ function rx(e,dd){if(e.h)return "Mantén "+fmt(secs(e,dd))+(e.side?" por lado":"
 function label(e,k){if(e.h)return e.side?(k?"D":"I"):"✓";if(e.side)return (Math.floor(k/2)+1)+(k%2?"D":"I");return k+1}
 
 /* ---- dibujo ---- */
-function fig(k){var p=P[k];return '<svg viewBox="0 0 120 100" aria-hidden="true"><path d="M5 89H115" class="g"/><g class="bd">'+p.b.map(function(d){return '<path d="'+d+'"/>'}).join("")+'</g>'+(p.band||[]).map(function(d){return '<path class="bn" d="'+d+'"/>'}).join("")+'<circle cx="'+p.h[0]+'" cy="'+p.h[1]+'" r="7" class="hd"/></svg>'}
+function fig(k){var p=P[k];return '<svg viewBox="0 0 120 100" aria-hidden="true"><path d="M5 89H115" class="g"/><g class="bd">'+p.b.map(function(d){return '<path d="'+d+'"/>'}).join("")+'</g>'+(p.band||[]).map(function(d){return '<path class="bn" d="'+d+'"/>'}).join("")+(p.loop||[]).map(function(l){return '<ellipse class="bn" cx="'+l[0]+'" cy="'+l[1]+'" rx="'+l[2]+'" ry="'+l[3]+'"/>'}).join("")+'<circle cx="'+p.h[0]+'" cy="'+p.h[1]+'" r="7" class="hd"/></svg>'}
 function wk(){
  $("wk").innerHTML=D.map(function(dd,i){return '<button class="dy '+dd.c+(i==sel?' sel':'')+(i==td?' hoy':'')+(done(i)?' ok':'')+'" data-i="'+i+'" role="tab" aria-selected="'+(i==sel)+'" aria-label="'+dd.f+(done(i)?', hecho':'')+'">'+dd.d+'<i></i></button>'}).join("");
  var tot=0,ok=0;D.forEach(function(dd,i){if(has(i)){tot++;if(done(i))ok++}});
@@ -243,7 +269,7 @@ function day(){
    var b="";
    if(e.h&&c<n)b='<button class="bt" data-run="'+j+'">▶ '+(e.side?(c?"Derecho ":"Izquierdo "):"")+fmt(secs(e,dd))+'</button>';
    else if(e.rest&&c<n)b='<button class="bt r" data-rest="'+j+'">Descanso '+e.rest+' s</button>';
-   h+='<article class="cd'+(c>=n?' done':'')+(T&&T.d==sel&&T.j==j?' act':'')+'" id="ex'+j+'"><div class="pn">'+fig(e.p)+'</div><div class="tx"><h3>'+e.n+'</h3><span class="rx">'+rx(e,dd)+'</span><p class="tp">'+e.tip+'</p><div class="ac">'+dots+b+'</div></div></article>'});
+   h+='<article class="cd'+(c>=n?' done':'')+(T&&T.d==sel&&T.j==j?' act':'')+'" id="ex'+j+'"><div class="pn">'+fig(e.p)+'</div><div class="tx"><h3>'+e.n+'</h3><span class="rx">'+rx(e,dd)+'</span><p class="tp">'+e.tip+'</p>'+(e.how?'<details class="how"><summary>Cómo se hace</summary><ol>'+e.how.map(function(x){return '<li>'+x+'</li>'}).join("")+'</ol></details>':'')+'<div class="ac">'+dots+b+'</div></div></article>'});
  }
  $("day").innerHTML=h;
  $("snd").textContent=sound?"🔔 Sonido activado":"🔕 Sonido apagado";
@@ -252,7 +278,7 @@ function all(){wk();day()}
 
 /* ---- Salud (vía Atajos) ---- */
 var HS={k:{atajo:"Salud gomas",tipo:"Fuerza funcional"},y:{atajo:"Salud yoga",tipo:"Yoga"},s:{atajo:"Salud yoga",tipo:"Yoga"},m:{atajo:"Salud yoga",tipo:"Yoga"},g:{atajo:"Salud gomas",tipo:"Fuerza funcional"}};
-function mins(i){if(D[i].gym)return st.gmMin||50;var pl=parseInt(D[i].m)||20,t=st["t"+i];if(!t)return pl;var r=Math.round((Date.now()-t)/60000);return (r>=pl*0.5&&r<=pl*3)?r:pl}
+function mins(i){if(D[i].gym)return st.gmMin||50;var pl=parseInt((D[i].m.match(/\d+/)||[20])[0]),t=st["t"+i];if(!t)return pl;var r=Math.round((Date.now()-t)/60000);return (r>=pl*0.5&&r<=pl*3)?r:pl}
 
 function hblock(i){var dd=D[i],hs=HS[dd.c],mn=mins(i),sv=st["h"+i];
  return '<div class="hl"><button class="bt'+(sv?' sv':'')+'" id="hk">'+(sv?'✓ Guardado en Salud':'❤️ Guardar en Salud')+'</button><span>'+hs.tipo+' · '+mn+' min</span>'+'<details><summary>Configurar (solo la primera vez)</summary><ol><li>Abre la app <b>Atajos</b> y crea un atajo nuevo con el nombre <code>'+hs.atajo+'</code> (exacto).</li><li>Añade la acción <b>Registrar entrenamiento</b> y elige el tipo <b>'+hs.tipo+'</b>.</li><li>En <b>Duración</b>, toca el campo y, en la barra de variables, elige <b>Entrada del atajo</b>; deja la unidad en <b>min</b>.</li><li>Guarda. La primera vez que lo uses, dale permiso para escribir en Salud.</li></ol></details></div>'}
