@@ -30,7 +30,7 @@ h1{font:600 26px/1.15 Fraunces,Georgia,serif;margin:4px 0 2px}
 .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:18px}
 .dy{border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:12px;padding:8px 0 7px;font:500 13px Figtree,sans-serif;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:52px}
 .dy i{width:9px;height:9px;border-radius:50%;background:var(--ln);display:block}
-.dy.y i,.dy.s i{background:#7F77DD}.dy.k i{background:#D4537E}.dy.g i{background:#EF9F27}.dy.m i{background:#1D9E75}
+.dy.y i,.dy.s i{background:#7F77DD}.dy.k i{background:#D4537E}.dy.p i{background:#378ADD}.dy.g i{background:#EF9F27}.dy.m i{background:#1D9E75}
 .dy.sel{background:var(--ac);color:#fff;border-color:var(--ac)}
 .dy.hoy{outline:2px solid var(--am);outline-offset:1px}
 .dy.ok i{background:var(--ac);width:14px;height:14px;position:relative}
@@ -51,6 +51,7 @@ h2{font:600 21px/1.2 Fraunces,Georgia,serif;margin:0}
 .g{stroke:#A8CFC1;stroke-width:1.5;fill:none}
 .bd{stroke:#3C3489;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .bn{stroke:#EF9F27;stroke-width:4;stroke-linecap:round;fill:none}
+.ar{stroke:#0F6E56;stroke-width:2;stroke-dasharray:3 3;fill:none}.arh{stroke:#0F6E56;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 .hd{fill:#F0997B;stroke:#3C3489;stroke-width:2}
 .tx{padding:10px 12px 12px;min-width:0}
 .tx h3{font:600 16px/1.25 Figtree,sans-serif;margin:0 0 4px}
@@ -161,6 +162,13 @@ esfinge:{b:["M10 84L56 84L84 58","M84 60L84 84L106 84"],h:[92,48]},
 hilo:{b:["M14 84L40 84L40 56L76 72","M76 72L56 86","M74 70L82 30"],h:[88,78]},
 mari:{b:["M60 28L60 62","M28 74L60 62L92 74","M28 74L58 82","M92 74L62 82","M60 38L48 60","M60 38L72 60"],h:[60,20]},
 lateral:{b:["M30 80L60 66L90 80","M30 80L60 86L90 80","M60 66L74 36","M72 40Q64 8 102 16","M70 44L92 76"],h:[82,30]},
+malasana:{b:["M30 84L22 62L60 76L98 62L90 84","M60 76L60 44","M60 48L36 62L58 58","M60 48L84 62L62 58"],h:[60,35]},
+lagart:{b:["M8 84L26 84L52 70L80 58L82 84L96 84","M52 70L78 62","M78 62L90 84"],h:[87,55]},
+paloma:{b:["M8 84L52 80","M52 80L86 84L64 88","M52 80L58 46","M58 50L74 82"],h:[59,38]},
+rana:{b:["M16 84L60 64L104 84","M16 84L10 70","M104 84L110 70","M54 64L44 84","M66 64L76 84"],h:[60,54]},
+abierta:{b:["M12 84L60 80L108 84","M60 80L60 46","M60 50L46 82","M60 50L74 82"],h:[60,37]},
+cuad:{b:["M22 78L60 80L104 82","M60 78L88 76L72 56","M30 76L70 56"],h:[14,76]},
+mtumb:{b:["M24 82L60 82","M60 82L84 64L96 84","M60 82L76 70L98 80","M30 80L50 86"],h:[14,79]},
 sava:{b:["M24 82L104 82","M38 80L54 86"],h:[14,80]},
 puente:{b:["M26 84L60 60L86 58L90 84","M28 84L56 86"],h:[15,80],loop:[[78,59,3.5,8,0]]},
 almeja:{b:["M22 76L62 76L94 78L68 84","M62 76L92 58L68 79"],h:[13,72],band:["M90 60L93 77"]},
@@ -169,7 +177,7 @@ sent:{b:["M80 84L62 84L72 60L42 60L56 32","M56 36L84 40"],h:[60,24],loop:[[64,60
 remo:{b:["M45 84L100 84","M45 84L45 40","M45 44L40 58L58 54"],h:[45,30],band:["M100 82L58 54"]},
 apert:{b:["M60 25L60 58L48 86","M60 58L72 86","M60 34L24 34","M60 34L96 34"],h:[60,17],band:["M26 34Q60 44 94 34"]},
 curl:{b:["M50 30L50 62L44 86","M50 62L58 86","M50 36L52 56L72 44"],h:[50,22],band:["M54 86L72 44"]},
-press:{b:["M60 25L60 58L48 86","M60 58L72 86","M60 34L42 36L40 12","M60 34L78 36L80 12"],h:[60,17],band:["M48 86L40 12","M72 86L80 12"]}
+press:{b:["M60 25L60 58L48 86","M60 58L72 86","M60 34L40 46L40 30","M60 34L80 46L80 30"],h:[60,17],band:["M50 86L40 30","M70 86L80 30"],arr:["M40 24V6","M80 24V6"]},
 };
 /* Ejercicios: n nombre, p figura, h segundos (mantener) o s×r series×reps, side por lado, tip clave, how pasos */
 var X={
@@ -185,11 +193,18 @@ esfinge:{n:"Esfinge",p:"esfinge",h:40,tip:"Codos bajo los hombros; abre el pecho
 hilo:{n:"Hilo en la aguja",p:"hilo",h:30,side:1,tip:"Suelta la parte alta de la espalda y el hombro.",how:["A cuatro patas.","Pasa un brazo por debajo del cuerpo hacia el lado contrario, con la palma hacia arriba.","Apoya ese hombro y la mejilla en el suelo. Si quieres, sube el otro brazo hacia el techo."]},
 mari:{n:"Mariposa",p:"mari",h:60,tip:"Plantas de los pies juntas y espalda larga.",how:["Sentada, junta las plantas de los pies y deja caer las rodillas hacia los lados.","Sujeta los pies con las manos y crece hacia arriba.","Si quieres más, inclínate un poco hacia delante con la espalda recta."]},
 lateral:{n:"Estiramiento lateral",p:"lateral",h:30,side:1,tip:"Estira el costado: alarga, no te hundas.",how:["Sentada con las piernas cruzadas.","Sube un brazo por encima de la cabeza y apoya la otra mano en el suelo, a tu lado.","Inclínate hacia el lado de la mano apoyada, alargando el costado contrario."]},
+malasana:{n:"Sentadilla profunda",p:"malasana",h:45,tip:"Abre las caderas: los codos empujan las rodillas hacia fuera.",how:["De pie con los pies algo más abiertos que las caderas y las puntas hacia fuera.","Baja la cadera lo más que puedas, con los talones en el suelo (si no llegan, pon una toalla enrollada debajo).","Junta las manos delante del pecho y usa los codos para abrir las rodillas. Espalda larga."]},
+lagart:{n:"Lagartija",p:"lagart",h:45,side:1,tip:"Apertura profunda de cadera e ingle.",how:["Desde la estocada baja (rodilla de atrás en el suelo), lleva el pie de delante hacia fuera, hacia el borde de la esterilla.","Apoya las dos manos en el suelo por dentro del pie de delante.","Deja caer la cadera hacia el suelo. Si puedes, baja a los antebrazos."]},
+paloma:{n:"Paloma",p:"paloma",h:60,side:1,tip:"Estira el glúteo y la cadera de la pierna de delante.",how:["Desde cuatro patas, lleva una rodilla hacia la muñeca del mismo lado y el pie hacia la otra muñeca.","Estira la otra pierna hacia atrás, con el empeine en el suelo.","Cadera recta hacia delante y manos a los lados. Si quieres más, inclina el tronco hacia el suelo."]},
+rana:{n:"Rana",p:"rana",h:60,tip:"Abre la cara interna de los muslos. Ve muy poco a poco.",how:["A cuatro patas, con una toalla o cojín bajo las rodillas.","Separa las rodillas hacia los lados todo lo que puedas, con los tobillos en línea con las rodillas y los pies hacia fuera.","Baja a los antebrazos y lleva la cadera un poco hacia atrás. Respira; no fuerces."]},
+abierta:{n:"Apertura sentada",p:"abierta",h:60,tip:"Piernas abiertas en V; inclínate al frente con la espalda recta.",how:["Sentada, abre las piernas estiradas en V todo lo que puedas, con las puntas de los pies hacia el techo.","Crece hacia arriba al inspirar.","Al espirar, camina con las manos hacia delante sin redondear la espalda."]},
+cuad:{n:"Cuádriceps de lado",p:"cuad",h:45,side:1,tip:"Estira la parte delantera del muslo; rodillas juntas.",how:["Túmbate de lado con la cabeza apoyada en el brazo de abajo.","Dobla la rodilla de arriba y coge el pie con la mano de arriba.","Lleva el talón hacia el culo y la rodilla un poco hacia atrás, sin arquear la espalda."]},
+mtumb:{n:"Mariposa tumbada",p:"mtumb",h:90,tip:"Deja que la gravedad abra las caderas. Nada de forzar.",how:["Túmbate boca arriba.","Junta las plantas de los pies y deja caer las rodillas hacia los lados.","Si tira mucho, pon un cojín bajo cada rodilla. Brazos sueltos y respiración lenta."]},
 sava:{n:"Relajación final",p:"sava",h:180,tip:"Tumbada, ojos cerrados. Respira lento por la nariz.",how:["Túmbate boca arriba con brazos y piernas sueltos.","Cierra los ojos y deja que el cuerpo pese.","Respira lento por la nariz, alargando la espiración."]}
 };
 function ex(k,o){var e={},b=X[k];for(var a in b)e[a]=b[a];for(a in o||{})e[a]=o[a];return e}
 var YO=[ex("nino"),ex("gato"),ex("perro"),ex("estoc"),ex("isquio"),ex("fig4"),ex("tors"),ex("mari"),ex("sava")];
-var YS=[ex("nino",{h:90}),ex("gato"),ex("esfinge",{h:45}),ex("perro",{h:60}),ex("estoc",{h:60}),ex("isquio",{h:60}),ex("pinza",{h:60}),ex("lateral",{h:45}),ex("fig4",{h:75}),ex("tors",{h:60}),ex("mari",{h:90}),ex("sava",{h:240})];
+var YS=[ex("nino",{h:90}),ex("gato"),ex("perro",{h:60}),ex("malasana",{h:60}),ex("estoc",{h:60}),ex("paloma",{h:75}),ex("isquio",{h:60}),ex("abierta",{h:60}),ex("lateral",{h:45}),ex("tors",{h:60}),ex("mtumb",{h:120}),ex("sava",{h:180})];
 var GO=[
 {n:"Puente de glúteo",p:"puente",s:3,r:15,rest:45,tip:"Goma justo encima de las rodillas. Aprieta el glúteo 2 seg arriba.",how:["Boca arriba, rodillas dobladas, pies en el suelo a la anchura de las caderas.","Coloca la goma justo encima de las rodillas y empuja un poco hacia fuera para tensarla.","Sube la cadera apretando el glúteo hasta alinear hombros, cadera y rodillas. Aguanta 2 segundos y baja despacio."]},
 {n:"Almeja con goma",p:"almeja",s:3,r:15,rest:45,side:1,tip:"Goma justo encima de las rodillas. Los pies no se separan.",how:["Túmbate de lado con las rodillas dobladas y la goma justo encima de las rodillas.","Junta los pies y apoya la cabeza en el brazo de abajo.","Abre la rodilla de arriba sin separar los pies y sin girar la cadera hacia atrás. Baja despacio."]},
@@ -198,14 +213,15 @@ var GO=[
 {n:"Remo sentada",p:"remo",s:3,r:12,rest:45,tip:"Goma por la planta de los pies. Tira de los codos hacia atrás.",how:["Sentada con las piernas estiradas y la goma pasada por la planta de los pies.","Sujeta un extremo en cada mano, con la espalda recta.","Tira de los codos hacia atrás pegados al cuerpo y junta los omóplatos. Vuelve despacio."]},
 {n:"Apertura de espalda",p:"apert",s:3,r:15,rest:45,tip:"De pie, goma delante del pecho. Abre los brazos hacia los lados.",how:["De pie, sujeta la goma con las dos manos y los brazos estirados al frente, a la altura del pecho.","Abre los brazos hacia los lados, estirando la goma, hasta que toque el pecho.","Junta los omóplatos al final y vuelve despacio al frente."]},
 {n:"Curl de bíceps",p:"curl",s:3,r:12,rest:45,tip:"Pisa la goma. Codos pegados al cuerpo.",how:["De pie, pisa el centro de la goma y sujeta un extremo en cada mano, palmas hacia delante.","Dobla los codos subiendo las manos hacia los hombros.","Los codos no se mueven de los costados. Baja despacio."]},
-{n:"Press de hombro",p:"press",s:3,r:12,rest:45,tip:"Pisa la goma. Empuja las manos hacia arriba.",how:["De pie, pisa el centro de la goma con los dos pies. Sube los extremos hasta los hombros.","Empuja las manos hacia arriba hasta estirar los brazos por encima de la cabeza.","Aprieta la tripa para no arquear la espalda. Baja despacio a los hombros."]},
+{n:"Press de hombro",p:"press",s:3,r:12,rest:45,tip:"Pisa la goma y empieza con las manos a la altura de los hombros. Empuja hacia arriba.",how:["De pie, pisa el centro de la goma con los dos pies.","Sube los extremos hasta los hombros, con los codos doblados y las palmas al frente: esa es la posición de inicio (la del dibujo).","Empuja las manos hacia arriba hasta estirar los brazos (la flecha) y baja despacio otra vez a los hombros. Aprieta la tripa para no arquear la espalda."]},
 ex("fig4",{n:"Estiramiento: figura 4",h:45}),
 ex("isquio",{n:"Estiramiento: isquios",h:30})];
+var PC=[ex("malasana"),ex("estoc"),ex("lagart"),ex("paloma"),ex("rana"),ex("abierta"),ex("cuad"),ex("isquio"),ex("mtumb")];
 var MO=[ex("gato"),ex("hilo"),ex("esfinge"),ex("pinza"),ex("lateral"),ex("mari"),ex("sava",{h:120})];
 var D=[
 {d:"L",f:"Lunes",c:"y",t:"Yoga y flexibilidad",e:YO},
 {d:"M",f:"Martes",c:"k",t:"Gimnasio",m:"45-55 min",e:[],gym:1,x:"Hoy toca tu circuito del gimnasio. Al terminar, 5 min de estiramientos: figura 4, isquios y mariposa (1 min cada uno)."},
-{d:"X",f:"Miércoles",c:"z",t:"Descanso",m:"",e:[],x:"Día libre. Un paseo suave de 20-30 min ayuda a recuperar."},
+{d:"X",f:"Miércoles",c:"p",t:"Piernas y caderas",e:PC,pre:"Estiramientos suaves: nunca hasta el dolor. Si te apetece, añade un paseo de 20-30 min."},
 {d:"J",f:"Jueves",c:"g",t:"Gomas: glúteo y espalda",e:GO,pre:"Calienta 5 min: círculos de cadera, de hombros y 10 sentadillas sin goma."},
 {d:"V",f:"Viernes",c:"m",t:"Movilidad suave",e:MO},
 {d:"S",f:"Sábado",c:"s",t:"Yoga relajante",e:YS,pre:"Hoy las posturas duran más: ve sin prisa y respira en cada una."},
@@ -237,7 +253,7 @@ function rx(e,dd){if(e.h)return "Mantén "+fmt(secs(e,dd))+(e.side?" por lado":"
 function label(e,k){if(e.h)return e.side?(k?"D":"I"):"✓";if(e.side)return (Math.floor(k/2)+1)+(k%2?"D":"I");return k+1}
 
 /* ---- dibujo ---- */
-function fig(k){var p=P[k];return '<svg viewBox="0 0 120 100" aria-hidden="true"><path d="M5 89H115" class="g"/><g class="bd">'+p.b.map(function(d){return '<path d="'+d+'"/>'}).join("")+'</g>'+(p.band||[]).map(function(d){return '<path class="bn" d="'+d+'"/>'}).join("")+(p.loop||[]).map(function(l){return '<ellipse class="bn" cx="'+l[0]+'" cy="'+l[1]+'" rx="'+l[2]+'" ry="'+l[3]+'"/>'}).join("")+'<circle cx="'+p.h[0]+'" cy="'+p.h[1]+'" r="7" class="hd"/></svg>'}
+function fig(k){var p=P[k];return '<svg viewBox="0 0 120 100" aria-hidden="true"><path d="M5 89H115" class="g"/><g class="bd">'+p.b.map(function(d){return '<path d="'+d+'"/>'}).join("")+'</g>'+(p.band||[]).map(function(d){return '<path class="bn" d="'+d+'"/>'}).join("")+(p.arr||[]).map(function(d){return '<path class="ar" d="'+d+'"/><path class="arh" d="'+d.replace(/M(\d+) \d+V(\d+)/,function(m,x,y){return "M"+(x-4)+" "+(+y+5)+"L"+x+" "+y+"L"+(+x+4)+" "+(+y+5)})+'"/>'}).join("")+(p.loop||[]).map(function(l){return '<ellipse class="bn" cx="'+l[0]+'" cy="'+l[1]+'" rx="'+l[2]+'" ry="'+l[3]+'"/>'}).join("")+'<circle cx="'+p.h[0]+'" cy="'+p.h[1]+'" r="7" class="hd"/></svg>'}
 function wk(){
  $("wk").innerHTML=D.map(function(dd,i){return '<button class="dy '+dd.c+(i==sel?' sel':'')+(i==td?' hoy':'')+(done(i)?' ok':'')+'" data-i="'+i+'" role="tab" aria-selected="'+(i==sel)+'" aria-label="'+dd.f+(done(i)?', hecho':'')+'">'+dd.d+'<i></i></button>'}).join("");
  var tot=0,ok=0;D.forEach(function(dd,i){if(has(i)){tot++;if(done(i))ok++}});
@@ -277,7 +293,7 @@ function day(){
 function all(){wk();day()}
 
 /* ---- Salud (vía Atajos) ---- */
-var HS={k:{atajo:"Salud gomas",tipo:"Fuerza funcional"},y:{atajo:"Salud yoga",tipo:"Yoga"},s:{atajo:"Salud yoga",tipo:"Yoga"},m:{atajo:"Salud yoga",tipo:"Yoga"},g:{atajo:"Salud gomas",tipo:"Fuerza funcional"}};
+var HS={p:{atajo:"Salud yoga",tipo:"Yoga"},k:{atajo:"Salud gomas",tipo:"Fuerza funcional"},y:{atajo:"Salud yoga",tipo:"Yoga"},s:{atajo:"Salud yoga",tipo:"Yoga"},m:{atajo:"Salud yoga",tipo:"Yoga"},g:{atajo:"Salud gomas",tipo:"Fuerza funcional"}};
 function mins(i){if(D[i].gym)return st.gmMin||50;var pl=parseInt((D[i].m.match(/\d+/)||[20])[0]),t=st["t"+i];if(!t)return pl;var r=Math.round((Date.now()-t)/60000);return (r>=pl*0.5&&r<=pl*3)?r:pl}
 
 function hblock(i){var dd=D[i],hs=HS[dd.c],mn=mins(i),sv=st["h"+i];
